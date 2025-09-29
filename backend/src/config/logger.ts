@@ -1,6 +1,6 @@
 import winston from 'winston';
-import { env, isDevelopment } from './env.js';
-
+import { env, isDevelopment, isProduction } from './env.js';
+import type { Request, Response } from 'express';
 // Custom log format
 const customFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -10,7 +10,7 @@ const customFormat = winston.format.combine(
     let logMessage = `${timestamp} [${level.toUpperCase()}]: ${message}`;
 
     if (stack) {
-      logMessage += `\n${stack}`;
+      logMessage += `\n${typeof stack === 'string' ? stack : JSON.stringify(stack)}`;
     }
 
     if (Object.keys(meta).length > 0) {
@@ -18,7 +18,7 @@ const customFormat = winston.format.combine(
     }
 
     return logMessage;
-  }),
+  })
 );
 
 // Development format (more readable)
@@ -30,7 +30,7 @@ const devFormat = winston.format.combine(
     let logMessage = `${timestamp} ${level}: ${message}`;
 
     if (stack) {
-      logMessage += `\n${stack}`;
+      logMessage += `\n${typeof stack === 'string' ? stack : JSON.stringify(stack)}`;
     }
 
     if (Object.keys(meta).length > 0) {
@@ -38,7 +38,7 @@ const devFormat = winston.format.combine(
     }
 
     return logMessage;
-  }),
+  })
 );
 
 // Create transports array
@@ -51,7 +51,7 @@ transports.push(
     format: isDevelopment() ? devFormat : customFormat,
     handleExceptions: true,
     handleRejections: true,
-  }),
+  })
 );
 
 // File transports (only in production)
@@ -66,7 +66,7 @@ if (!isDevelopment()) {
       maxFiles: 5,
       handleExceptions: true,
       handleRejections: true,
-    }),
+    })
   );
 
   transports.push(
@@ -79,7 +79,7 @@ if (!isDevelopment()) {
       maxFiles: 5,
       handleExceptions: true,
       handleRejections: true,
-    }),
+    })
   );
 }
 
@@ -91,7 +91,7 @@ const logger = winston.createLogger({
 });
 
 // Helper function for request logging
-export const logRequest = (req, res, responseTime) => {
+export const logRequest = (req: Request, res: Response, responseTime?: number) => {
   const { method, url, ip, headers } = req;
   const { statusCode } = res;
 
@@ -104,5 +104,14 @@ export const logRequest = (req, res, responseTime) => {
     responseTime: responseTime ? `${responseTime}ms` : undefined,
   });
 };
+
+if (!isProduction()) {
+  // Enable request logging in development
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+    })
+  );
+}
 
 export default logger;

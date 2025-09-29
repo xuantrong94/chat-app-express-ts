@@ -2,6 +2,8 @@ import { createServer } from 'http';
 import app from './app.js';
 import { env } from './config/env.js';
 import logger from './config/logger.js';
+import process from 'process';
+import { setTimeout } from 'timers';
 
 // Create HTTP server
 const server = createServer(app);
@@ -26,11 +28,10 @@ const startServer = async () => {
     });
 
     // Handle server errors
-    server.on('error', (error) => {
+    server.on('error', error => {
       logger.error('Server error:', error);
       process.exit(1);
     });
-
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);
@@ -38,11 +39,11 @@ const startServer = async () => {
 };
 
 // Graceful shutdown handling
-const gracefulShutdown = async (signal) => {
+const gracefulShutdown = async (signal: string) => {
   logger.info(`Received ${signal}. Starting graceful shutdown...`);
 
   // Stop accepting new connections
-  server.close(async (err) => {
+  server.close(async err => {
     if (err) {
       logger.error('Error during server shutdown:', err);
       process.exit(1);
@@ -66,7 +67,7 @@ const gracefulShutdown = async (signal) => {
   });
 
   // Force shutdown if graceful shutdown takes too long
-  global.setTimeout(() => {
+  setTimeout(() => {
     logger.error('Graceful shutdown timed out. Forcing shutdown...');
     process.exit(1);
   }, 30000); // 30 seconds timeout
@@ -77,7 +78,7 @@ process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Handle uncaught exceptions
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   logger.error('Uncaught Exception:', error);
   gracefulShutdown('uncaughtException');
 });
@@ -89,7 +90,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Start the server
-startServer().catch((error) => {
+startServer().catch(error => {
   logger.error('Failed to start application:', error);
   process.exit(1);
 });

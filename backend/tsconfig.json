@@ -38,12 +38,17 @@
     "paths": {
       "@/*": ["src/*"],
       "@/config/*": ["src/config/*"],
-      "@/middleware/*": ["src/middleware/*"],
-      "@/routes/*": ["src/routes/*"],
+      "@/controllers/*": ["src/controllers/*"],
+      "@/middlewares/*": ["src/middlewares/*"],
       "@/models/*": ["src/models/*"],
+      "@/routes/*": ["src/routes/*"],
       "@/services/*": ["src/services/*"],
       "@/utils/*": ["src/utils/*"],
-      "@/types/*": ["src/types/*"]
+      "@/shared/*": ["src/shared/*"],
+      "@/shared/types/*": ["src/shared/types/*"],
+      "@/shared/constants/*": ["src/shared/constants/*"],
+      "@/shared/enums/*": ["src/shared/enums/*"],
+      "@/types/*": ["src/shared/types/*"]
     }
   },
   "include": ["src/**/*", "**/*.ts", "**/*.js"],

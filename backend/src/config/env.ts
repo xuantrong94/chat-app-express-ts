@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
+// Import process for environments where it's not global
+import process from 'process';
+// Import console for environments where it's not global
+import console from 'node:console';
+
 // Load environment variables
 dotenv.config();
 
@@ -43,7 +48,7 @@ const envValidation = envSchema.safeParse(process.env);
 
 if (!envValidation.success) {
   console.error('❌ Invalid environment variables:');
-  console.error(envValidation.error.format());
+  console.error(envValidation.error.issues);
   process.exit(1);
 }
 
