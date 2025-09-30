@@ -1,39 +1,14 @@
-import { asyncHandler } from '@/middlewares/asyncHandler';
+import { signin, signup, logout } from '@/controllers/auth.controller';
+import { validateSignin, validateSignup } from '@/validators/auth.validator';
 import { Router } from 'express';
+
 const router = Router();
 
-router.post(
-  '/signin',
-  asyncHandler(async (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: 'Sign-in successful',
-      timestamp: new Date().toISOString(),
-    });
-  })
-);
+router.post('/signin', validateSignin, signin);
 
-router.post(
-  '/signup',
-  asyncHandler(async (req, res) => {
-    res.status(201).json({
-      success: true,
-      message: 'Sign-up successful',
-      timestamp: new Date().toISOString(),
-    });
-  })
-);
+router.post('/signup', validateSignup, signup);
 
 // logout route
-router.post(
-  '/logout',
-  asyncHandler(async (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: 'Logout successful',
-      timestamp: new Date().toISOString(),
-    });
-  })
-);
+router.post('/logout', logout);
 
 export default router;
