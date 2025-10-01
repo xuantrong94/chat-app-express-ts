@@ -49,6 +49,9 @@ const baseEnvSchema = z.object({
   COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('lax'),
   COOKIE_ACCESS_TOKEN_EXPIRES: z.coerce.number().default(15 * 60 * 1000), // 15 minutes in ms
   COOKIE_REFRESH_TOKEN_EXPIRES: z.coerce.number().default(7 * 24 * 60 * 60 * 1000), // 7 days in ms
+
+  // Resend Email Service
+  RESEND_API_KEY: z.string().optional(),
 });
 
 // First, validate with optional secrets

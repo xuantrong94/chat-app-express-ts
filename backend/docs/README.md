@@ -55,6 +55,9 @@ concerns:
 - **[MIDDLEWARE.md](./MIDDLEWARE.md)** - Middleware creation and usage patterns
 - **[CONTROLLERS.md](./CONTROLLERS.md)** - HTTP handling and response patterns
 - **[SERVICES.md](./SERVICES.md)** - Business logic and service layer patterns
+- **[ENV_USAGE.md](./ENV_USAGE.md)** - Environment configuration usage guide
+- **[ENV_QUICK_REFERENCE.md](./ENV_QUICK_REFERENCE.md)** - Environment variables
+  quick reference
 
 ## 🎯 Quick Navigation
 
@@ -75,6 +78,8 @@ concerns:
 - **Creating middleware**: [Middleware Patterns](./MIDDLEWARE.md)
 - **Defining types**: [Type System](./TYPE_SYSTEM.md)
 - **Understanding project structure**: [Developer Guide](./DEVELOPER.md)
+- **Configuring environment**: [Environment Usage](./ENV_USAGE.md) or
+  [Environment Quick Reference](./ENV_QUICK_REFERENCE.md)
 
 ## 🛠️ Key Technologies
 

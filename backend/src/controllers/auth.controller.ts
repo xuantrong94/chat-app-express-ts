@@ -1,6 +1,7 @@
 import { typedAsyncHandler } from '@/middlewares/asyncHandler';
 import authService from '@/services/auth.service';
-import { AUTH_MESSAGES } from '@/shared/constants/response-messages';
+import emailService from '@/services/email.service';
+import { AUTH_MESSAGES, EMAIL_MESSAGES } from '@/shared/constants/response-messages';
 import { ISignupRequest, ISigninRequest } from '@/shared/types/user.types';
 import ResponseBuilder from '@/utils/responseBuilder';
 import { CookieHelper, COOKIE_NAMES } from '@/utils/cookieHelper';
@@ -39,11 +40,38 @@ export const signup = typedAsyncHandler<Record<string, string>, ISignupRequest>(
       CookieHelper.getRefreshTokenCookieOptions()
     );
 
-    ResponseBuilder.success(
-      res,
-      { message: 'Account created successfully' },
-      AUTH_MESSAGES.SIGNUP.SUCCESS
-    );
+    // Send welcome/verification email
+    try {
+      // For now, we'll create a simple verification link
+      // In a real app, you'd generate a proper verification token
+      const verificationLink = `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/verify-email?token=placeholder_token&email=${signupData.email}`;
+
+      await emailService.sendSignupEmail(signupData.email, signupData.fullName, verificationLink);
+
+      ResponseBuilder.success(
+        res,
+        {
+          message: 'Account created successfully',
+          emailSent: true,
+          note: EMAIL_MESSAGES.SIGNUP_EMAIL.VERIFICATION_SENT,
+        },
+        AUTH_MESSAGES.SIGNUP.SUCCESS
+      );
+    } catch (emailError) {
+      // Even if email fails, signup was successful
+      // Log the error and return success with email failure note
+      console.error('Failed to send welcome email:', emailError);
+
+      ResponseBuilder.success(
+        res,
+        {
+          message: 'Account created successfully',
+          emailSent: false,
+          note: 'Account created but welcome email could not be sent',
+        },
+        AUTH_MESSAGES.SIGNUP.SUCCESS
+      );
+    }
   }
 );
 
