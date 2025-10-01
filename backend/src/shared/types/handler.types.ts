@@ -20,6 +20,7 @@ export interface TypedRequest<
   body: TBody;
   query: TQuery;
   user?: AuthenticatedUser; // For authenticated routes
+  cookies: Record<string, string>; // Add cookies support
 }
 
 // Typed async function for route handlers

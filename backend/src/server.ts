@@ -2,6 +2,7 @@ import { createServer } from 'http';
 import app from './app.js';
 import { env } from './config/env.js';
 import logger from './config/logger.js';
+import database from './config/database.js';
 import process from 'process';
 import { setTimeout } from 'timers';
 
@@ -11,6 +12,9 @@ const server = createServer(app);
 // Handle server startup
 const startServer = async () => {
   try {
+    // Connect to database first
+    await database.connect();
+
     // Start the server
     server.listen(env.PORT, env.HOST, () => {
       logger.info('🚀 Server started successfully', {
@@ -53,7 +57,7 @@ const gracefulShutdown = async (signal: string) => {
 
     try {
       // Close database connections if any
-      // await mongoose.connection.close();
+      await database.disconnect();
       logger.info('Database connections closed');
 
       // Perform any other cleanup tasks

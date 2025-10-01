@@ -10,7 +10,7 @@ import console from 'node:console';
 dotenv.config();
 
 // Environment validation schema
-const envSchema = z.object({
+const baseEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3000),
   HOST: z.string().default('localhost'),
@@ -19,9 +19,9 @@ const envSchema = z.object({
   MONGODB_URI: z.string().default('mongodb://localhost:27017/chat-app'),
 
   // JWT
-  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
+  JWT_SECRET: z.string().optional(),
   JWT_EXPIRES_IN: z.string().default('24h'),
-  JWT_REFRESH_SECRET: z.string().min(32, 'JWT refresh secret must be at least 32 characters'),
+  JWT_REFRESH_SECRET: z.string().optional(),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
 
   // CORS
@@ -40,11 +40,47 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: z.coerce.number().default(12),
 
   // Session
+  SESSION_SECRET: z.string().optional(),
+
+  // Cookies
+  COOKIE_SECRET: z.string().optional(),
+  COOKIE_SECURE: z.coerce.boolean().default(false), // Set to true in production
+  COOKIE_HTTP_ONLY: z.coerce.boolean().default(true),
+  COOKIE_SAME_SITE: z.enum(['strict', 'lax', 'none']).default('lax'),
+  COOKIE_ACCESS_TOKEN_EXPIRES: z.coerce.number().default(15 * 60 * 1000), // 15 minutes in ms
+  COOKIE_REFRESH_TOKEN_EXPIRES: z.coerce.number().default(7 * 24 * 60 * 60 * 1000), // 7 days in ms
+});
+
+// First, validate with optional secrets
+const baseValidation = baseEnvSchema.safeParse(process.env);
+
+if (!baseValidation.success) {
+  console.error('❌ Invalid environment variables:');
+  console.error(baseValidation.error.issues);
+  process.exit(1);
+}
+
+const baseEnv = baseValidation.data;
+
+// Set development defaults
+if (baseEnv.NODE_ENV === 'development') {
+  baseEnv.JWT_SECRET ??= 'dev-jwt-secret-key-32-characters-long';
+  baseEnv.JWT_REFRESH_SECRET ??= 'dev-jwt-refresh-secret-32-chars-long';
+  baseEnv.SESSION_SECRET ??= 'dev-session-secret-key-32-characters';
+  baseEnv.COOKIE_SECRET ??= 'dev-cookie-secret-key-32-characters';
+}
+
+// Now validate with required secrets
+const envSchema = z.object({
+  ...baseEnvSchema.shape,
+  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 characters'),
+  JWT_REFRESH_SECRET: z.string().min(32, 'JWT refresh secret must be at least 32 characters'),
   SESSION_SECRET: z.string().min(32, 'Session secret must be at least 32 characters'),
+  COOKIE_SECRET: z.string().min(32, 'Cookie secret must be at least 32 characters'),
 });
 
 // Validate environment variables
-const envValidation = envSchema.safeParse(process.env);
+const envValidation = envSchema.safeParse(baseEnv);
 
 if (!envValidation.success) {
   console.error('❌ Invalid environment variables:');
@@ -58,19 +94,5 @@ export const env = envValidation.data;
 export const isDevelopment = () => env.NODE_ENV === 'development';
 export const isProduction = () => env.NODE_ENV === 'production';
 export const isTest = () => env.NODE_ENV === 'test';
-
-// Default values for development
-if (isDevelopment()) {
-  // Provide default secrets for development only
-  if (!process.env.JWT_SECRET) {
-    env.JWT_SECRET = 'dev-jwt-secret-key-32-characters-long';
-  }
-  if (!process.env.JWT_REFRESH_SECRET) {
-    env.JWT_REFRESH_SECRET = 'dev-jwt-refresh-secret-32-chars-long';
-  }
-  if (!process.env.SESSION_SECRET) {
-    env.SESSION_SECRET = 'dev-session-secret-key-32-characters';
-  }
-}
 
 export default env;

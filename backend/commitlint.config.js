@@ -26,8 +26,8 @@ export default {
     'subject-full-stop': [2, 'never', '.'],
     'header-max-length': [2, 'always', 72],
     'body-leading-blank': [1, 'always'],
-    'body-max-line-length': [2, 'always', 100],
+    // 'body-max-line-length': disabled to allow longer commit body lines
     'footer-leading-blank': [1, 'always'],
-    'footer-max-line-length': [2, 'always', 100],
+    // 'footer-max-line-length': disabled to allow longer footer lines
   },
 };

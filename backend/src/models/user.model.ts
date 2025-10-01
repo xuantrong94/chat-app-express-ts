@@ -10,6 +10,7 @@ export interface IUserDocument extends IUser, mongoose.Document {
 
 export interface IUserModel extends mongoose.Model<IUserDocument> {
   findByEmail(email: string): Promise<IUserDocument | null>;
+  existsByEmail(email: string): Promise<boolean>;
 }
 
 const userSchema = new mongoose.Schema<IUserDocument, IUserModel>(
@@ -41,7 +42,6 @@ const userSchema = new mongoose.Schema<IUserDocument, IUserModel>(
     timestamps: true,
   }
 );
-const User = mongoose.model<IUserDocument>('User', userSchema);
 
 // ================================================ //
 // =============== STATIC METHODS ================= //
@@ -49,6 +49,11 @@ const User = mongoose.model<IUserDocument>('User', userSchema);
 
 userSchema.statics.findByEmail = async function (email: string): Promise<IUserDocument | null> {
   return this.findOne({ email });
+};
+
+userSchema.statics.existsByEmail = async function (email: string): Promise<boolean> {
+  const user = await this.findOne({ email }).lean();
+  return !!user;
 };
 
 // ================================================ //
@@ -67,5 +72,7 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
 });
+
+const User = mongoose.model<IUserDocument, IUserModel>('User', userSchema);
 
 export default User;
