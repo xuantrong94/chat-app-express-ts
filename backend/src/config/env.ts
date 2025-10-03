@@ -52,6 +52,9 @@ const baseEnvSchema = z.object({
 
   // Resend Email Service
   RESEND_API_KEY: z.string().optional(),
+
+  // Frontend URL
+  FRONTEND_URL: z.string().optional(),
 });
 
 // First, validate with optional secrets

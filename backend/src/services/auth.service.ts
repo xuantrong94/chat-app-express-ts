@@ -2,12 +2,12 @@ import User, { IUserDocument } from '@/models/user.model';
 import { AUTH_MESSAGES } from '@/shared/constants/response-messages';
 import { ISignupRequest } from '@/shared/types/user.types';
 import jwt, { SignOptions } from 'jsonwebtoken';
+import env from '@/config/env';
 class AuthService {
-  private readonly JWT_SECRET = process.env.JWT_SECRET ?? 'default_jwt_secret';
-  private readonly JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ?? '24h';
-  private readonly JWT_REFRESH_SECRET =
-    process.env.JWT_REFRESH_SECRET ?? 'default_jwt_refresh_secret';
-  private readonly JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN ?? '7d';
+  private readonly JWT_SECRET = env.JWT_SECRET ?? 'default_jwt_secret';
+  private readonly JWT_EXPIRES_IN = env.JWT_EXPIRES_IN ?? '24h';
+  private readonly JWT_REFRESH_SECRET = env.JWT_REFRESH_SECRET ?? 'default_jwt_refresh_secret';
+  private readonly JWT_REFRESH_EXPIRES_IN = env.JWT_REFRESH_EXPIRES_IN ?? '7d';
 
   // generate token
   generateToken(user: IUserDocument): string {

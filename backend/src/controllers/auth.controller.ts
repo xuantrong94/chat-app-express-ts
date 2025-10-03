@@ -5,6 +5,7 @@ import { AUTH_MESSAGES, EMAIL_MESSAGES } from '@/shared/constants/response-messa
 import { ISignupRequest, ISigninRequest } from '@/shared/types/user.types';
 import ResponseBuilder from '@/utils/responseBuilder';
 import { CookieHelper, COOKIE_NAMES } from '@/utils/cookieHelper';
+import env from '@/config/env';
 
 export const signin = typedAsyncHandler<Record<string, string>, ISigninRequest>(
   async (req, res) => {
@@ -44,7 +45,7 @@ export const signup = typedAsyncHandler<Record<string, string>, ISignupRequest>(
     try {
       // For now, we'll create a simple verification link
       // In a real app, you'd generate a proper verification token
-      const verificationLink = `${process.env.FRONTEND_URL ?? 'http://localhost:3000'}/verify-email?token=placeholder_token&email=${signupData.email}`;
+      const verificationLink = `${env.FRONTEND_URL ?? 'http://localhost:3000'}/verify-email?token=placeholder_token&email=${signupData.email}`;
 
       await emailService.sendSignupEmail(signupData.email, signupData.fullName, verificationLink);
 
