@@ -2,6 +2,7 @@ import { IApiResponse, ResponseMetadata, PaginationResponse } from '@/shared/typ
 import { Response } from 'express';
 import { AppError } from './AppError';
 import { ErrorType } from '@/shared/types/error.types';
+import { TypedResponse } from '@/shared/types';
 import process from 'process';
 
 class ResponseBuilder {
@@ -9,7 +10,7 @@ class ResponseBuilder {
    * Success response
    */
   static success<T>(
-    res: Response,
+    res: TypedResponse,
     data: T,
     message = 'Success',
     statusCode = 200,
@@ -22,7 +23,7 @@ class ResponseBuilder {
       metadata: {
         ...metadata,
         timestamp: new Date().toISOString(),
-        requestId: res.locals.requestId,
+        requestId: res.locals.requestId ?? 'unknown',
       },
     };
 
@@ -32,14 +33,14 @@ class ResponseBuilder {
   /**
    * Created response (201)
    */
-  static created<T>(res: Response, data: T, message = 'Created'): Response {
+  static created<T>(res: TypedResponse, data: T, message = 'Created'): Response {
     return this.success(res, data, message, 201);
   }
 
   /**
    * No content response (204)
    */
-  static noContent(res: Response): Response {
+  static noContent(res: TypedResponse): Response {
     return res.status(204).end();
   }
 
@@ -47,7 +48,7 @@ class ResponseBuilder {
    * Error response
    */
   static error(
-    res: Response,
+    res: TypedResponse,
     message = 'An error occurred',
     statusCode = 500,
     errorCode?: string,
@@ -66,7 +67,7 @@ class ResponseBuilder {
       },
       metadata: {
         timestamp: new Date().toISOString(),
-        requestId: res.locals.requestId,
+        requestId: res.locals.requestId ?? 'unknown',
       },
     };
 
@@ -76,7 +77,7 @@ class ResponseBuilder {
   /**
    * Error response from AppError instance
    */
-  static fromAppError(res: Response, error: AppError): Response {
+  static fromAppError(res: TypedResponse, error: AppError): Response {
     const isDevelopment = process?.env?.NODE_ENV === 'development';
 
     const response: IApiResponse<null> = {
@@ -90,7 +91,7 @@ class ResponseBuilder {
       },
       metadata: {
         timestamp: error.timestamp,
-        requestId: res.locals.requestId,
+        requestId: res.locals.requestId ?? 'unknown',
       },
     };
 
@@ -100,7 +101,7 @@ class ResponseBuilder {
   /**
    * Generic error handler that works with both AppError and generic Error
    */
-  static handleError(res: Response, error: Error | AppError): Response {
+  static handleError(res: TypedResponse, error: Error | AppError): Response {
     if (AppError.isAppError(error)) {
       return this.fromAppError(res, error);
     }
@@ -113,28 +114,28 @@ class ResponseBuilder {
   /**
    * Unauthorized response (401)
    */
-  static unauthorized(res: Response, message = 'Unauthorized'): Response {
+  static unauthorized(res: TypedResponse, message = 'Unauthorized'): Response {
     return this.error(res, message, 401, ErrorType.UNAUTHORIZED);
   }
 
   /**
    * Forbidden response (403)
    */
-  static forbidden(res: Response, message = 'Forbidden'): Response {
+  static forbidden(res: TypedResponse, message = 'Forbidden'): Response {
     return this.error(res, message, 403, ErrorType.FORBIDDEN);
   }
 
   /**
    * Not found response (404)
    */
-  static notFound(res: Response, message = 'Resource not found'): Response {
+  static notFound(res: TypedResponse, message = 'Resource not found'): Response {
     return this.error(res, message, 404, ErrorType.NOT_FOUND);
   }
 
   /**
    * Conflict response (409)
    */
-  static conflict(res: Response, message = 'Conflict', details?: unknown): Response {
+  static conflict(res: TypedResponse, message = 'Conflict', details?: unknown): Response {
     return this.error(res, message, 409, ErrorType.DUPLICATE_KEY, details);
   }
 
@@ -142,7 +143,7 @@ class ResponseBuilder {
    * Validation error response (422)
    */
   static validationError(
-    res: Response,
+    res: TypedResponse,
     message = 'Validation failed',
     details?: unknown
   ): Response {
@@ -152,7 +153,7 @@ class ResponseBuilder {
   /**
    * Internal server error response (500)
    */
-  static internalError(res: Response, message = 'Internal server error'): Response {
+  static internalError(res: TypedResponse, message = 'Internal server error'): Response {
     return this.error(res, message, 500, ErrorType.INTERNAL_SERVER);
   }
 
@@ -160,7 +161,7 @@ class ResponseBuilder {
    * Paginated response
    */
   static paginated<T>(
-    res: Response,
+    res: TypedResponse,
     data: T[],
     page: number,
     limit: number,
@@ -175,7 +176,7 @@ class ResponseBuilder {
       data,
       metadata: {
         timestamp: new Date().toISOString(),
-        requestId: res.locals.requestId,
+        requestId: res.locals.requestId ?? 'unknown',
         page,
         limit,
         total,
@@ -190,7 +191,7 @@ class ResponseBuilder {
    * Creates an appropriate error response based on status code
    */
   static errorByStatusCode(
-    res: Response,
+    res: TypedResponse,
     statusCode: number,
     message?: string,
     details?: unknown

@@ -7,8 +7,30 @@ export interface AuthenticatedUser {
   [key: string]: unknown;
 }
 
+// Interface for Express response locals
+export interface AppLocals {
+  user?: AuthenticatedUser;
+  requestId?: string;
+}
+
+// Custom typed response interface with our locals
+export interface TypedResponse extends Omit<Response, 'locals'> {
+  locals: AppLocals;
+}
+
 // Generic async function type
 export type AsyncFunction = (req: Request, res: Response, next: NextFunction) => Promise<void>;
+
+// Typed async function for route handlers with custom locals
+export type TypedAsyncFunction<
+  TParams = Record<string, string>,
+  TBody = Record<string, unknown>,
+  TQuery = Record<string, string | string[] | undefined>,
+> = (
+  req: TypedRequest<TParams, TBody, TQuery>,
+  res: TypedResponse,
+  next: NextFunction
+) => Promise<void>;
 
 // Custom typed request interface that properly extends Express Request
 export interface TypedRequest<
@@ -22,10 +44,3 @@ export interface TypedRequest<
   user?: AuthenticatedUser; // For authenticated routes
   cookies: Record<string, string>; // Add cookies support
 }
-
-// Typed async function for route handlers
-export type TypedAsyncFunction<
-  TParams = Record<string, string>,
-  TBody = Record<string, unknown>,
-  TQuery = Record<string, string | string[] | undefined>,
-> = (req: TypedRequest<TParams, TBody, TQuery>, res: Response, next: NextFunction) => Promise<void>;

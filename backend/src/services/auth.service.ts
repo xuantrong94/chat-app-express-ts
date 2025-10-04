@@ -129,7 +129,11 @@ const authService = new AuthService();
 
 export default authService;
 
-interface JwtPayload {
+// ===================================== //
+// ========== TYPES & INTERFACES ========== //
+// ===================================== //
+
+export interface JwtPayload {
   id: string;
   email: string;
 }
