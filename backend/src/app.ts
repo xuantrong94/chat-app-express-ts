@@ -104,7 +104,7 @@ app.use(
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 // Cookie parser
-app.use(cookieParser());
+app.use(cookieParser(env.COOKIE_SECRET));
 
 // Compression middleware
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
