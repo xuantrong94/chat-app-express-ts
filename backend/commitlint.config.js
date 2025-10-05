@@ -24,7 +24,8 @@ export default {
     'subject-case': [2, 'never', ['sentence-case', 'start-case', 'pascal-case', 'upper-case']],
     'subject-empty': [2, 'never'],
     'subject-full-stop': [2, 'never', '.'],
-    'header-max-length': [2, 'always', 72],
+    'subject-max-length': [0], // Disabled subject length limit
+    'header-max-length': [0], // Disabled header length limit
     'body-leading-blank': [1, 'always'],
     // 'body-max-line-length': disabled to allow longer commit body lines
     'footer-leading-blank': [1, 'always'],

@@ -38,18 +38,23 @@ separation of concerns and strong type safety.
 
 ### Key Features
 
-- Type-safe request handling
-- Comprehensive error handling
+- Type-safe request handling with typed locals
+- Comprehensive error handling with custom AppError class
 - Rate limiting and security middlewares
-- Structured logging
+- Authentication middleware with route protection
+- Structured logging with Winston
 - Input validation with Zod
-- Standardized API responses
+- Standardized API responses with response builder
+- Email service integration
+- Cookie helper utilities
+- Type-safe response locals system
+- Comprehensive documentation structure
 
 ## Architecture
 
 The application follows a **Layered Architecture** pattern:
 
-```
+```text
 ┌─────────────────┐
 │   Controllers   │ ← HTTP Request/Response handling
 ├─────────────────┤
@@ -89,7 +94,10 @@ src/
 │   ├── asyncHandler.ts      # Async error handling
 │   ├── errorHandler.ts      # Global error handling
 │   ├── rateLimiter.ts       # Rate limiting
-│   └── validation.ts        # Request validation
+│   ├── validation.ts        # Request validation
+│   └── auth.middlewares/    # Authentication middlewares
+│       ├── index.ts         # Auth middleware exports
+│       └── protectRoute.ts  # Route protection middleware
 ├── models/                  # Mongoose models
 │   ├── user.model.ts        # User data model
 │   └── index.ts             # Model exports
@@ -99,25 +107,63 @@ src/
 │   └── index.ts             # Route exports
 ├── services/                # Business logic
 │   ├── auth.service.ts      # Authentication logic
+│   ├── email.service.ts     # Email sending service
 │   ├── user.service.ts      # User management logic
 │   └── index.ts             # Service exports
 ├── shared/                  # Shared utilities
 │   ├── constants/           # Application constants
+│   │   ├── index.ts         # Constant exports
+│   │   └── email-templates/ # Email template constants
+│   │       └── signup.ts    # Signup email template
 │   ├── enums/               # TypeScript enums
+│   │   └── index.ts         # Enum exports
 │   └── types/               # TypeScript type definitions
 │       ├── api.types.ts     # API response types
 │       ├── auth.types.ts    # Authentication types
 │       ├── error.types.ts   # Error handling types
+│       ├── express.d.ts     # Express type extensions
 │       ├── handler.types.ts # Request handler types
 │       ├── response.types.ts # Response types
 │       ├── user.types.ts    # User-related types
 │       └── index.ts         # Type exports
 ├── utils/                   # Utility functions
 │   ├── AppError.ts          # Custom error class
+│   ├── cookieHelper.ts      # Cookie utility functions
 │   ├── responseBuilder.ts   # Standardized responses
+│   ├── typedLocals.ts       # Type-safe response locals
 │   └── index.ts             # Utility exports
 └── validators/              # Zod validation schemas
     └── auth.validator.ts    # Authentication validation
+```
+
+### Additional Project Files
+
+```text
+backend/                     # Project root
+├── commitlint.config.js     # Commit linting configuration
+├── COOKIE_CONFIG.md         # Cookie configuration guide
+├── ENV_CONFIG.md            # Environment setup guide
+├── eslint.config.js         # ESLint configuration
+├── package.json             # Package dependencies and scripts
+├── pnpm-lock.yaml           # pnpm lock file
+├── pnpm-workspace.yaml      # pnpm workspace configuration
+├── README.md                # Project overview
+├── SETUP_COMPLETE.md        # Setup completion guide
+├── test.txt                 # Test file
+├── tsconfig.json            # TypeScript configuration
+├── docs/                    # Documentation
+│   ├── CONTROLLERS.md       # Controller patterns guide
+│   ├── dependencies.md      # Dependencies documentation
+│   ├── DEVELOPER.md         # Developer documentation (this file)
+│   ├── ENV_QUICK_REFERENCE.md # Environment variables reference
+│   ├── ENV_USAGE.md         # Environment usage guide
+│   ├── MIDDLEWARE.md        # Middleware patterns guide
+│   ├── QUICK_START.md       # Quick start guide
+│   ├── README.md            # Documentation index
+│   ├── SERVICES.md          # Service layer guide
+│   ├── TYPE_SAFE_LOCALS.md  # Type-safe locals guide
+│   └── TYPE_SYSTEM.md       # Type system guide
+└── logs/                    # Application logs directory
 ```
 
 ## Getting Started
@@ -199,7 +245,13 @@ import './local-file';
 Continue reading:
 
 - [Type System Guide](./TYPE_SYSTEM.md)
+- [Type-Safe Locals Guide](./TYPE_SAFE_LOCALS.md)
 - [Middleware Patterns](./MIDDLEWARE.md)
 - [Controller Patterns](./CONTROLLERS.md)
 - [Service Layer](./SERVICES.md)
-- [API Standards](./API_STANDARDS.md)
+- [Environment Configuration](./ENV_CONFIG.md)
+- [Cookie Configuration](./COOKIE_CONFIG.md)
+- [Quick Start Guide](./QUICK_START.md)
+- [Environment Quick Reference](./ENV_QUICK_REFERENCE.md)
+- [Environment Usage Guide](./ENV_USAGE.md)
+- [Dependencies Documentation](./dependencies.md)
